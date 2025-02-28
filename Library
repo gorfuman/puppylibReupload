@@ -34,6 +34,35 @@ local isMobile = uis.TouchEnabled
 
 isMobile = true
 
+
+if isMobile then
+        
+	local ScreenGui = Instance.new("ScreenGui")
+	local CloseOpen = Instance.new("TextButton")
+	local UICorner = Instance.new("UICorner")
+
+	ScreenGui.Parent = game.CoreGui
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	CloseOpen.Name = "CloseOpen"
+	CloseOpen.Parent = ScreenGui
+	CloseOpen.BackgroundColor3 = Color3.new(0.168627, 0.168627, 0.168627)
+	CloseOpen.BorderColor3 = Color3.new(0, 0, 0)
+	CloseOpen.BorderSizePixel = 0
+	CloseOpen.Position = UDim2.new(0.011080348, 0, 0.0213904157, 0)
+	CloseOpen.Size = UDim2.new(0.1, 0, 0.1, 0)
+	CloseOpen.Font = Enum.Font.FredokaOne
+	CloseOpen.Text = "close / open gui"
+	CloseOpen.TextColor3 = Color3.new(1, 1, 1)
+	CloseOpen.TextSize = 14
+
+	UICorner.Parent = CloseOpen
+end
+
+
+
+
+
 -- // indexes
 library.__index = library
 pages.__index = pages
@@ -363,11 +392,59 @@ function library:new(props)
 	local toggled = true
 	local cooldown = false
 	local saved = UDim2.new(0,0,0,0)
+
+
+	CloseOpen.MouseButton1Click:Connect(function()
+		if cooldown == false then
+			if toggled then
+				cooldown = true
+				toggled = not toggled
+				saved = outline.Position
+				local xx,yy = 0,0
+				local xxx,yyy = 0,0
+				--
+				if (outline.AbsolutePosition.X+(outline.AbsoluteSize.X/2)) < (cam.ViewportSize.X/2) then
+					xx = -3
+				else
+					xx = 3
+				end
+				--
+				if window.y then
+					if (outline.AbsolutePosition.Y+(outline.AbsoluteSize.Y/2)) < (cam.ViewportSize.Y/2) then
+						yy = -3
+					else
+						yy = 3
+					end
+				else
+					yy = saved.Y.Scale
+					yyy = saved.Y.Offset
+				end
+				--
+				if window.x == false and window.y == false then
+					screen.Enabled = false
+				else
+					ts:Create(outline, TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.In), {Position = UDim2.new(xx,xxx,yy,yyy)}):Play()
+				end
+				wait(0.5)
+				cooldown = false
+			else
+				cooldown = true
+				toggled = not toggled
+				if window.x == false and window.y == false then
+					screen.Enabled = true
+				else
+					ts:Create(outline, TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out), {Position = saved}):Play()
+				end
+				wait(0.5)
+				cooldown = false
+			end
+		end
+	end)
+
 	--
 	uis.InputBegan:Connect(function(Input)
 		if Input.UserInputType == Enum.UserInputType.Keyboard then
 			if Input.KeyCode == window.key then
-				print("Hiding gui")
 				if cooldown == false then
 					if toggled then
 						cooldown = true
