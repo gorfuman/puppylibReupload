@@ -32,8 +32,6 @@ local cam = ws.CurrentCamera
 
 local isMobile = uis.TouchEnabled
 
-isMobile = true
-
 
 
 
